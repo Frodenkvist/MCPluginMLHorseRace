@@ -1,0 +1,11 @@
+name: HorceRace
+main: me.frodenkvist.horcerace.HorceRace
+version: 0.1
+depend: [WorldEdit]
+description: >
+             things!
+commands:
+    hr:
+permissions:
+    horcerace.admin:
+        default: op
