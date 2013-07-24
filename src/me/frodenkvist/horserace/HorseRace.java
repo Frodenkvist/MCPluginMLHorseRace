@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -40,6 +41,7 @@ public class HorseRace extends JavaPlugin
 	public void onEnable()
 	{
 		plugin = this;
+		configFile = new File(getDataFolder(), "config.yml");
 		
 		try
 		{
@@ -108,6 +110,9 @@ public class HorseRace extends JavaPlugin
 						saveConfig();
 						
 						RaceHandler.getRace().setRaceArea(ca);
+						
+						player.sendMessage(ChatColor.GREEN + "Area Set");
+						
 						return true;
 					}
 					else if(args[1].equalsIgnoreCase("firstline"))
@@ -142,6 +147,9 @@ public class HorseRace extends JavaPlugin
 						
 						saveConfig();
 						RaceHandler.getRace().setFirstLine(ca);
+						
+						player.sendMessage(ChatColor.GREEN + "First Line Set");
+						
 						return true;
 					}
 					else if(args[1].equalsIgnoreCase("secondline"))
@@ -177,12 +185,28 @@ public class HorseRace extends JavaPlugin
 						saveConfig();
 						
 						RaceHandler.getRace().setSecondLine(ca);
+						
+						player.sendMessage(ChatColor.GREEN + "Second Line Set");
+						
 						return true;
 					}
-					/*else if(args[1].equalsIgnoreCase("secondline"))
+					else if(args[1].equalsIgnoreCase("startloc"))
 					{
+						Location loc = player.getLocation();
 						
-					}*/
+						getConfig().set("Race.StartLoc.x", loc.getBlockX());
+						getConfig().set("Race.StartLoc.y", loc.getBlockY());
+						getConfig().set("Race.StartLoc.z", loc.getBlockZ());
+						getConfig().set("Race.StartLoc.world", loc.getWorld().getName());
+						
+						saveConfig();
+						
+						RaceHandler.getRace().setStartLoc(loc);
+						
+						player.sendMessage(ChatColor.GREEN + "Start Location Set");
+						
+						return true;
+					}
 				}
 			}
 		}

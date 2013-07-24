@@ -1,5 +1,5 @@
-name: HorceRace
-main: me.frodenkvist.horcerace.HorceRace
+name: HorseRace
+main: me.frodenkvist.horserace.HorseRace
 version: 0.1
 depend: [WorldEdit]
 description: >

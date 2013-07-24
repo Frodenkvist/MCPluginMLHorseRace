@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class Race
 {
-	public static final int WIN_LAPS_AMOUNT = 4;
+	public static final int WIN_LAPS_AMOUNT = 2;
 	private List<HRPlayer> participants = new ArrayList<HRPlayer>();
 	private CuboidArea raceArea;
 	private CuboidArea firstLine;
@@ -59,10 +59,14 @@ public class Race
 	{
 		for(HRPlayer hrp : participants)
 		{
+			if(hrp.equals(winner))
+				continue;
 			hrp.setLaps(0);
 			participants.remove(hrp);
 		}
 		Race.globalAnnouncing(winner.getName() + " Has Won!");
+		winner.setLaps(0);
+		participants.remove(winner);
 	}
 	
 	public boolean hasStarted()
@@ -83,6 +87,11 @@ public class Race
 	public boolean isOnSecondLine(HRPlayer hrp)
 	{
 		return secondLine.containsLoc(hrp.getLocation());
+	}
+	
+	public void setStartLoc(Location loc)
+	{
+		startLoc = loc;
 	}
 	
 	public static void localAnnouncing(String msg)

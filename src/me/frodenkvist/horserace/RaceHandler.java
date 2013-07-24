@@ -50,15 +50,20 @@ public class RaceHandler
 		}
 		if(config.contains("Race.FirstLine.Pos1"))
 		{
-			race.setRaceArea(new CuboidArea(new Location(Bukkit.getWorld(config.getString("Race.FirstLine.Pos1.world")), config.getInt("Race.FirstLine.Pos1.x"), config.getInt("Race.FirstLine.Pos1.y"),
+			race.setFirstLine(new CuboidArea(new Location(Bukkit.getWorld(config.getString("Race.FirstLine.Pos1.world")), config.getInt("Race.FirstLine.Pos1.x"), config.getInt("Race.FirstLine.Pos1.y"),
 					config.getInt("Race.FirstLine.Pos1.z")), new Location(Bukkit.getWorld(config.getString("Race.FirstLine.Pos2.world")), config.getInt("Race.FirstLine.Pos2.x"),
 							config.getInt("Race.FirstLine.Pos2.y"), config.getInt("Race.FirstLine.Pos2.z"))));
 		}
 		if(config.contains("Race.SecondLine.Pos1"))
 		{
-			race.setRaceArea(new CuboidArea(new Location(Bukkit.getWorld(config.getString("Race.SecondLine.Pos1.world")), config.getInt("Race.SecondLine.Pos1.x"), config.getInt("Race.SecondLine.Pos1.y"),
+			race.setSecondLine(new CuboidArea(new Location(Bukkit.getWorld(config.getString("Race.SecondLine.Pos1.world")), config.getInt("Race.SecondLine.Pos1.x"), config.getInt("Race.SecondLine.Pos1.y"),
 					config.getInt("Race.SecondLine.Pos1.z")), new Location(Bukkit.getWorld(config.getString("Race.SecondLine.Pos2.world")), config.getInt("Race.SecondLine.Pos2.x"),
 							config.getInt("Race.SecondLine.Pos2.y"), config.getInt("Race.SecondLine.Pos2.z"))));
+		}
+		if(config.contains("Race.StartLoc"))
+		{
+			race.setStartLoc(new Location(Bukkit.getWorld(config.getString("Race.StartLoc.world")), config.getInt("Race.StartLoc.x"), config.getInt("Race.StartLoc.y"),
+					config.getInt("Race.StartLoc.z")));
 		}
 		for(Player p : Bukkit.getOnlinePlayers())
 		{
