@@ -1,5 +1,7 @@
 package me.frodenkvist.horserace;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +25,8 @@ public class PlayerListener implements Listener
 			if(!race.isOnFirstLine(hrp))
 				return;
 			hrp.addLaps(1);
+			String message = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + "," + hrp.getLaps();
+			Bukkit.getMessenger().dispatchIncomingMessage(player, "Scoreboard", message.getBytes());
 			hrp.setGoneByCheckpoint(false);
 			if(hrp.getLaps() < Race.WIN_LAPS_AMOUNT)
 				return;

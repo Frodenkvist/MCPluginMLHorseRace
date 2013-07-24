@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public class Race
 {
@@ -60,22 +62,31 @@ public class Race
 				continue;
 			//p.teleport(startLoc);
 			participants.add(RaceHandler.getPlayer(p));
+			String message = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + ",1";
+			String message2 = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + ",0";
+			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message.getBytes());
+			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message2.getBytes());
 		}
 		signalTorch.setType(Material.REDSTONE_TORCH_ON);
 		started = true;
+		Race.globalAnnouncing(ChatColor.YELLOW + "The Race Has STARTED!!");
 	}
 	
 	public void setWinner(HRPlayer winner)
 	{
+		String message = "REMOVE,Laps:";
 		for(HRPlayer hrp : participants)
 		{
 			if(hrp.equals(winner))
 				continue;
 			hrp.setLaps(0);
 			participants.remove(hrp);
+			Bukkit.getMessenger().dispatchIncomingMessage(hrp.getPlayer(), "Scoreboard", message.getBytes());
 		}
 		Race.globalAnnouncing(winner.getName() + " Has Won!");
 		winner.setLaps(0);
+		giveReward(winner);
+		Bukkit.getMessenger().dispatchIncomingMessage(winner.getPlayer(), "Scoreboard", message.getBytes());
 		participants.remove(winner);
 		signalTorch.setType(Material.REDSTONE_TORCH_OFF);
 		started = false;
@@ -109,6 +120,27 @@ public class Race
 	public Block getSignalTorch()
 	{
 		return signalTorch;
+	}
+	
+	private void giveReward(HRPlayer hrp)
+	{
+		Inventory inv = hrp.getPlayer().getInventory();
+		boolean check = false;
+		for(ItemStack is : inv.getContents())
+		{
+			if(is == null)
+			{
+				check = true;
+				break;
+			}
+			if(is.getType().equals(Material.AIR))
+			{
+				check = true;
+				break;
+			}
+		}
+		if(check)
+			inv.addItem(new ItemStack(99));
 	}
 	
 	public static void localAnnouncing(String msg, CuboidArea raceArea)
