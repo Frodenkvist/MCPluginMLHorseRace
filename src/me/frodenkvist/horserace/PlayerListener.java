@@ -3,6 +3,7 @@ package me.frodenkvist.horserace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class PlayerListener implements Listener
@@ -34,5 +35,13 @@ public class PlayerListener implements Listener
 			hrp.setGoneByCheckpoint(true);
 			return;
 		}
+	}
+	@EventHandler
+	public void onBlockRedstoneEvent(BlockRedstoneEvent event)
+	{
+		Race race = RaceHandler.getRace();
+		if(race.getSignalTorch().equals(event.getBlock()))
+			event.setNewCurrent(event.getOldCurrent());
+			
 	}
 }

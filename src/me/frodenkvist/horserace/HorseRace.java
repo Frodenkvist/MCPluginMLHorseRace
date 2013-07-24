@@ -8,7 +8,9 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -204,6 +206,32 @@ public class HorseRace extends JavaPlugin
 						RaceHandler.getRace().setStartLoc(loc);
 						
 						player.sendMessage(ChatColor.GREEN + "Start Location Set");
+						
+						return true;
+					}
+					else if(args[1].equalsIgnoreCase("signaltorch"))
+					{
+						Block block = player.getTargetBlock(null, 10);
+						//block = block.getLocation().add(0,1,0).getBlock();
+						/*if(block.getTypeId() != 69)
+						{
+							player.sendMessage(ChatColor.RED + "You Must Target A Lever");
+							player.sendMessage("" + block.getTypeId());
+							return false;
+						}*/
+						
+						getConfig().set("Race.SignalLever.x", block.getLocation().getBlockX());
+						getConfig().set("Race.SignalLever.y", block.getLocation().getBlockY());
+						getConfig().set("Race.SignalLever.z", block.getLocation().getBlockZ());
+						getConfig().set("Race.SignalLever.world", block.getLocation().getWorld().getName());
+						
+						saveConfig();
+						
+						RaceHandler.getRace().setSignalTorch(block);
+						
+						block.setType(Material.REDSTONE_TORCH_OFF);
+						
+						player.sendMessage(ChatColor.GREEN + "Signal Torch Set");
 						
 						return true;
 					}

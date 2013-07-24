@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -64,6 +65,16 @@ public class RaceHandler
 		{
 			race.setStartLoc(new Location(Bukkit.getWorld(config.getString("Race.StartLoc.world")), config.getInt("Race.StartLoc.x"), config.getInt("Race.StartLoc.y"),
 					config.getInt("Race.StartLoc.z")));
+		}
+		if(config.contains("Race.SignalLever"))
+		{
+			Location loc = new Location(Bukkit.getWorld(config.getString("Race.SignalLever.world")), config.getInt("Race.SignalLever.x"), config.getInt("Race.SignalLever.y"),
+					config.getInt("Race.SignalLever.z"));
+			Block block = loc.getBlock();
+			//if(block.getTypeId() == 69)
+			//{
+			race.setSignalTorch(block);
+			//}
 		}
 		for(Player p : Bukkit.getOnlinePlayers())
 		{

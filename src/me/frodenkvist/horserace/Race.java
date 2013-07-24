@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class Race
@@ -15,6 +18,7 @@ public class Race
 	private CuboidArea firstLine;
 	private CuboidArea secondLine;
 	private Location startLoc;
+	private Block signalTorch;
 	private boolean started;
 	
 	public Race()
@@ -36,6 +40,11 @@ public class Race
 		secondLine = ca;
 	}
 	
+	public void setSignalTorch(Block block)
+	{
+		signalTorch = block;
+	}
+	
 	public boolean addParticipant(HRPlayer hrp)
 	{
 		return participants.add(hrp);
@@ -49,9 +58,10 @@ public class Race
 				continue;
 			if(!raceArea.containsLoc(p.getLocation()))
 				continue;
-			p.teleport(startLoc);
+			//p.teleport(startLoc);
 			participants.add(RaceHandler.getPlayer(p));
 		}
+		signalTorch.setType(Material.REDSTONE_TORCH_ON);
 		started = true;
 	}
 	
@@ -67,6 +77,8 @@ public class Race
 		Race.globalAnnouncing(winner.getName() + " Has Won!");
 		winner.setLaps(0);
 		participants.remove(winner);
+		signalTorch.setType(Material.REDSTONE_TORCH_OFF);
+		started = false;
 	}
 	
 	public boolean hasStarted()
@@ -94,13 +106,25 @@ public class Race
 		startLoc = loc;
 	}
 	
-	public static void localAnnouncing(String msg)
+	public Block getSignalTorch()
 	{
-		
+		return signalTorch;
+	}
+	
+	public static void localAnnouncing(String msg, CuboidArea raceArea)
+	{
+		for(Player p : Bukkit.getOnlinePlayers())
+		{
+			if(p == null)
+				continue;
+			if(!raceArea.containsLoc(p.getLocation()))
+				continue;
+			p.sendMessage(ChatColor.GREEN + "[Race]: " + ChatColor.RESET + msg);
+		}
 	}
 	
 	public static void globalAnnouncing(String msg)
 	{
-		Bukkit.broadcastMessage(msg);
+		Bukkit.broadcastMessage(ChatColor.GREEN + "[Race]: " + ChatColor.RESET + msg);
 	}
 }
