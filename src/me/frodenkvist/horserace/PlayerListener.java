@@ -1,5 +1,8 @@
 package me.frodenkvist.horserace;
 
+import java.text.DecimalFormat;
+import java.util.Date;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,6 +28,12 @@ public class PlayerListener implements Listener
 			if(!race.isOnFirstLine(hrp))
 				return;
 			hrp.addLaps(1);
+			DecimalFormat dcf = new DecimalFormat("###.##");
+			Date date = new Date();
+			double time = (date.getTime() - hrp.getLastTime()) / 1000.0D;
+			hrp.setLastTime(date.getTime());
+			hrp.setTotalTime(hrp.getTotalTime() + time);
+			hrp.getPlayer().sendMessage(ChatColor.GREEN + "Total Time: " + ChatColor.YELLOW + dcf.format(hrp.getTotalTime()) + ChatColor.GREEN + " Last Time: " + ChatColor.YELLOW + dcf.format(time));
 			String message = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + "," + hrp.getLaps();
 			Bukkit.getMessenger().dispatchIncomingMessage(player, "Scoreboard", message.getBytes());
 			hrp.setGoneByCheckpoint(false);
@@ -36,6 +45,12 @@ public class PlayerListener implements Listener
 		{
 			if(!race.isOnSecondLine(hrp))
 				return;
+			DecimalFormat dcf = new DecimalFormat("###.##");
+			Date date = new Date();
+			double time = (date.getTime() - hrp.getLastTime()) / 1000.0D;
+			hrp.setLastTime(date.getTime());
+			hrp.setTotalTime(hrp.getTotalTime() + time);
+			hrp.getPlayer().sendMessage(ChatColor.GREEN + "Total Time: " + ChatColor.YELLOW + dcf.format(hrp.getTotalTime()) + ChatColor.GREEN + " Last Time: " + ChatColor.YELLOW + dcf.format(time));
 			hrp.setGoneByCheckpoint(true);
 			return;
 		}

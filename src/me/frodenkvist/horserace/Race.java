@@ -1,6 +1,7 @@
 package me.frodenkvist.horserace;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -61,7 +62,10 @@ public class Race
 			if(!raceArea.containsLoc(p.getLocation()))
 				continue;
 			//p.teleport(startLoc);
-			participants.add(RaceHandler.getPlayer(p));
+			HRPlayer hrp = RaceHandler.getPlayer(p);
+			participants.add(hrp);
+			hrp.setLastTime(new Date().getTime());
+			hrp.setTotalTime(0);
 			String message = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + ",1";
 			String message2 = "SIDEBAR,Health," + "Laps:" + ChatColor.RESET + ",0";
 			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message.getBytes());
@@ -80,8 +84,10 @@ public class Race
 			if(hrp.equals(winner))
 				continue;
 			hrp.setLaps(0);
-			participants.remove(hrp);
+			hrp.setLastTime(0);
+			hrp.setTotalTime(0);
 			Bukkit.getMessenger().dispatchIncomingMessage(hrp.getPlayer(), "Scoreboard", message.getBytes());
+			participants.remove(hrp);
 		}
 		Race.globalAnnouncing(winner.getName() + " Has Won!");
 		winner.setLaps(0);

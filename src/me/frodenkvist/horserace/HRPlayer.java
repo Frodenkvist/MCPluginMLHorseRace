@@ -8,12 +8,16 @@ public class HRPlayer
 	private final Player player;
 	private boolean checkpoint;
 	private int laps;
+	private double totalTime;
+	private double lastTime;
 	
 	public HRPlayer(Player player)
 	{
 		this.player = player;
 		checkpoint = false;
 		laps = 0;
+		totalTime = 0;
+		lastTime = 0;
 	}
 	
 	public Player getPlayer()
@@ -54,5 +58,25 @@ public class HRPlayer
 	public int getLaps()
 	{
 		return laps;
+	}
+	
+	public void setLastTime(double lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+	
+	public double getLastTime()
+	{
+		return lastTime;
+	}
+	
+	public void setTotalTime(double time)
+	{
+		totalTime = time;
+	}
+	
+	public double getTotalTime()
+	{
+		return totalTime;
 	}
 }
