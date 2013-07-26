@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import me.frodenkvist.utils.FireworkEffectPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,7 +26,7 @@ public class Race
 	private CuboidArea firstLine;
 	private CuboidArea secondLine;
 	private Location startLoc;
-	private Block signalTorch;
+	private Block signalBlock;
 	private boolean started;
 	
 	public Race()
@@ -43,9 +48,9 @@ public class Race
 		secondLine = ca;
 	}
 	
-	public void setSignalTorch(Block block)
+	public void setSignalBlock(Block block)
 	{
-		signalTorch = block;
+		signalBlock = block;
 	}
 	
 	public boolean addParticipant(HRPlayer hrp)
@@ -71,7 +76,7 @@ public class Race
 			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message.getBytes());
 			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message2.getBytes());
 		}
-		signalTorch.setType(Material.REDSTONE_TORCH_ON);
+		signalBlock.setType(Material.REDSTONE_BLOCK);
 		started = true;
 		Race.globalAnnouncing(ChatColor.YELLOW + "The Race Has STARTED!!");
 	}
@@ -90,11 +95,12 @@ public class Race
 			participants.remove(hrp);
 		}
 		Race.globalAnnouncing(winner.getName() + " Has Won!");
+		winnerFireworks(winner.getPlayer());
 		winner.setLaps(0);
 		giveReward(winner);
 		Bukkit.getMessenger().dispatchIncomingMessage(winner.getPlayer(), "Scoreboard", message.getBytes());
 		participants.remove(winner);
-		signalTorch.setType(Material.REDSTONE_TORCH_OFF);
+		signalBlock.setType(Material.AIR);
 		started = false;
 	}
 	
@@ -123,9 +129,9 @@ public class Race
 		startLoc = loc;
 	}
 	
-	public Block getSignalTorch()
+	public Block getSignalBlock()
 	{
-		return signalTorch;
+		return signalBlock;
 	}
 	
 	private void giveReward(HRPlayer hrp)
@@ -147,6 +153,19 @@ public class Race
 		}
 		if(check)
 			inv.addItem(new ItemStack(99));
+	}
+	
+	public void winnerFireworks(Player player)
+	{
+		FireworkEffectPlayer feplayer = new FireworkEffectPlayer();
+		FireworkEffect fe = FireworkEffect.builder().withColor(Color.YELLOW).withColor(Color.RED).with(Type.STAR).flicker(true).build();
+		try
+		{
+			feplayer.playFirework(player.getWorld(), player.getLocation(), fe);
+		}
+		catch(Exception e)
+		{
+		}
 	}
 	
 	public static void localAnnouncing(String msg, CuboidArea raceArea)

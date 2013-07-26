@@ -8,8 +8,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener
 {
@@ -55,12 +56,16 @@ public class PlayerListener implements Listener
 			return;
 		}
 	}
+	
 	@EventHandler
-	public void onBlockRedstoneEvent(BlockRedstoneEvent event)
+	public void onPlayerJoinEvent(PlayerJoinEvent event)
 	{
-		Race race = RaceHandler.getRace();
-		if(race.getSignalTorch().equals(event.getBlock()))
-			event.setNewCurrent(event.getOldCurrent());
-			
+		RaceHandler.addPlayer(new HRPlayer(event.getPlayer()));
+	}
+	
+	@EventHandler
+	public void onPlayerQuitEvent(PlayerQuitEvent event)
+	{
+		RaceHandler.removePlayer(event.getPlayer());
 	}
 }

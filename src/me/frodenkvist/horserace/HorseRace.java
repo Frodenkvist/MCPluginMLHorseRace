@@ -209,7 +209,7 @@ public class HorseRace extends JavaPlugin
 						
 						return true;
 					}
-					else if(args[1].equalsIgnoreCase("signaltorch"))
+					else if(args[1].equalsIgnoreCase("signalblock"))
 					{
 						Block block = player.getTargetBlock(null, 10);
 						//block = block.getLocation().add(0,1,0).getBlock();
@@ -220,18 +220,18 @@ public class HorseRace extends JavaPlugin
 							return false;
 						}*/
 						
-						getConfig().set("Race.SignalLever.x", block.getLocation().getBlockX());
-						getConfig().set("Race.SignalLever.y", block.getLocation().getBlockY());
-						getConfig().set("Race.SignalLever.z", block.getLocation().getBlockZ());
-						getConfig().set("Race.SignalLever.world", block.getLocation().getWorld().getName());
+						getConfig().set("Race.SignalBlock.x", block.getLocation().getBlockX());
+						getConfig().set("Race.SignalBlock.y", block.getLocation().getBlockY());
+						getConfig().set("Race.SignalBlock.z", block.getLocation().getBlockZ());
+						getConfig().set("Race.SignalBlock.world", block.getLocation().getWorld().getName());
 						
 						saveConfig();
 						
-						RaceHandler.getRace().setSignalTorch(block);
+						RaceHandler.getRace().setSignalBlock(block);
 						
-						block.setType(Material.REDSTONE_TORCH_OFF);
+						block.setType(Material.AIR);
 						
-						player.sendMessage(ChatColor.GREEN + "Signal Torch Set");
+						player.sendMessage(ChatColor.GREEN + "Signal Block Set");
 						
 						return true;
 					}

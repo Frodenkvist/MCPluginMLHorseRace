@@ -66,14 +66,14 @@ public class RaceHandler
 			race.setStartLoc(new Location(Bukkit.getWorld(config.getString("Race.StartLoc.world")), config.getInt("Race.StartLoc.x"), config.getInt("Race.StartLoc.y"),
 					config.getInt("Race.StartLoc.z")));
 		}
-		if(config.contains("Race.SignalLever"))
+		if(config.contains("Race.SignalBlock"))
 		{
-			Location loc = new Location(Bukkit.getWorld(config.getString("Race.SignalLever.world")), config.getInt("Race.SignalLever.x"), config.getInt("Race.SignalLever.y"),
-					config.getInt("Race.SignalLever.z"));
+			Location loc = new Location(Bukkit.getWorld(config.getString("Race.SignalBlock.world")), config.getInt("Race.SignalBlock.x"), config.getInt("Race.SignalBlock.y"),
+					config.getInt("Race.SignalBlock.z"));
 			Block block = loc.getBlock();
 			//if(block.getTypeId() == 69)
 			//{
-			race.setSignalTorch(block);
+			race.setSignalBlock(block);
 			//}
 		}
 		for(Player p : Bukkit.getOnlinePlayers())
