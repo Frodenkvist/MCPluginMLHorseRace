@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -73,7 +74,7 @@ public class HorseRace extends JavaPlugin
 			if(args.length == 1)
 			{
 				if(args[0].equalsIgnoreCase("start"))
-					RaceHandler.getRace().startRace();
+					Bukkit.getScheduler().scheduleSyncDelayedTask(HorseRace.plugin, new RaceRunnable(RaceHandler.getRace()),0L);
 			}
 			else if(args.length == 2)
 			{
@@ -209,6 +210,23 @@ public class HorseRace extends JavaPlugin
 						
 						return true;
 					}
+					else if(args[1].equalsIgnoreCase("spectatorloc"))
+					{
+						Location loc = player.getLocation();
+						
+						getConfig().set("Race.SpectatorLoc.x", loc.getBlockX());
+						getConfig().set("Race.SpectatorLoc.y", loc.getBlockY());
+						getConfig().set("Race.SpectatorLoc.z", loc.getBlockZ());
+						getConfig().set("Race.SpectatorLoc.world", loc.getWorld().getName());
+						
+						saveConfig();
+						
+						RaceHandler.getRace().setSpectatorLoc(loc);
+						
+						player.sendMessage(ChatColor.GREEN + "Spectator Location Set");
+						
+						return true;
+					}
 					else if(args[1].equalsIgnoreCase("signalblock"))
 					{
 						Block block = player.getTargetBlock(null, 10);
@@ -232,6 +250,44 @@ public class HorseRace extends JavaPlugin
 						block.setType(Material.AIR);
 						
 						player.sendMessage(ChatColor.GREEN + "Signal Block Set");
+						
+						return true;
+					}
+					else if(args[1].equalsIgnoreCase("localannouncerarea"))
+					{
+						we = WorldEdit.getInstance();
+						wep = (WorldEditPlugin)getServer().getPluginManager().getPlugin("WorldEdit");
+						if(!player.hasPermission("horserace.admin"))
+							return false;
+						Region region = null;
+						try
+						{
+							region = wep.getSession(player).getSelection(wep.wrapPlayer(player).getWorld());
+						}
+						catch (IncompleteRegionException e)
+						{
+							e.printStackTrace();
+						}
+						if(region == null)
+							return false;
+						CuboidArea ca = new CuboidArea(new Location(player.getWorld(),region.getMinimumPoint().getBlockX(),region.getMinimumPoint().getBlockY(),region.getMinimumPoint().getBlockZ())
+						,new Location(player.getWorld(),region.getMaximumPoint().getBlockX(),region.getMaximumPoint().getBlockY(),region.getMaximumPoint().getBlockZ()));
+						
+						getConfig().set("Race.LocalAnnouncerArea.Pos1.x", ca.getHighLoc().getBlockX());
+						getConfig().set("Race.LocalAnnouncerArea.Pos1.y", ca.getHighLoc().getBlockY());
+						getConfig().set("Race.LocalAnnouncerArea.Pos1.z", ca.getHighLoc().getBlockZ());
+						getConfig().set("Race.LocalAnnouncerArea.Pos1.world", ca.getHighLoc().getWorld().getName());
+						
+						getConfig().set("Race.LocalAnnouncerArea.Pos2.x", ca.getLowLoc().getBlockX());
+						getConfig().set("Race.LocalAnnouncerArea.Pos2.y", ca.getLowLoc().getBlockY());
+						getConfig().set("Race.LocalAnnouncerArea.Pos2.z", ca.getLowLoc().getBlockZ());
+						getConfig().set("Race.LocalAnnouncerArea.Pos2.world", ca.getLowLoc().getWorld().getName());
+						
+						saveConfig();
+						
+						RaceHandler.getRace().setLocalAnnouncerArea(ca);
+						
+						player.sendMessage(ChatColor.GREEN + "Local Announcer´Area Set");
 						
 						return true;
 					}

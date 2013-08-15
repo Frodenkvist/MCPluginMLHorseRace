@@ -41,6 +41,7 @@ public class PlayerListener implements Listener
 			if(hrp.getLaps() < Race.WIN_LAPS_AMOUNT)
 				return;
 			race.setWinner(hrp);
+			race.checkFirst(hrp);
 		}
 		else
 		{

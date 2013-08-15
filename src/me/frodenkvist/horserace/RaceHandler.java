@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -66,6 +67,11 @@ public class RaceHandler
 			race.setStartLoc(new Location(Bukkit.getWorld(config.getString("Race.StartLoc.world")), config.getInt("Race.StartLoc.x"), config.getInt("Race.StartLoc.y"),
 					config.getInt("Race.StartLoc.z")));
 		}
+		if(config.contains("Race.SpectatorLoc"))
+		{
+			race.setStartLoc(new Location(Bukkit.getWorld(config.getString("Race.SpectatorLoc.world")), config.getInt("Race.SpectatorLoc.x"), config.getInt("Race.SpectatorLoc.y"),
+					config.getInt("Race.SpectatorLoc.z")));
+		}
 		if(config.contains("Race.SignalBlock"))
 		{
 			Location loc = new Location(Bukkit.getWorld(config.getString("Race.SignalBlock.world")), config.getInt("Race.SignalBlock.x"), config.getInt("Race.SignalBlock.y"),
@@ -76,12 +82,46 @@ public class RaceHandler
 			race.setSignalBlock(block);
 			//}
 		}
+		if(config.contains("Race.LocalAnnouncerArea.Pos1"))
+		{
+			race.setRaceArea(new CuboidArea(new Location(Bukkit.getWorld(config.getString("Race.LocalAnnouncerArea.Pos1.world")), config.getInt("Race.LocalAnnouncerArea.Pos1.x"), config.getInt("Race.LocalAnnouncerArea.Pos1.y"),
+					config.getInt("Race.LocalAnnouncerArea.Pos1.z")), new Location(Bukkit.getWorld(config.getString("Race.LocalAnnouncerArea.Pos2.world")), config.getInt("Race.LocalAnnouncerArea.Pos2.x"), config.getInt("Race.LocalAnnouncerArea.Pos2.y"),
+							config.getInt("Race.LocalAnnouncerArea.Pos2.z"))));
+		}
 		for(Player p : Bukkit.getOnlinePlayers())
 		{
 			if(p == null)
 				continue;
 			players.add(new HRPlayer(p));
 		}
+		
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(HorseRace.plugin, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Race.globalAnnouncing("HorseRace will begin in 10 minutes prepare your horses " + ChatColor.GREEN + "/rules race");
+			}
+		}, 20*60*20, 20*60*30);
+		
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(HorseRace.plugin, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Race.globalAnnouncing("HorseRace will begin in 5 minutes prepare your horses " + ChatColor.GREEN + "/rules race");
+			}
+		}, 20*60*25, 20*60*30);
+		
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(HorseRace.plugin, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Race.globalAnnouncing("HorseRace will begin in 1 minutes prepare your horses " + ChatColor.GREEN + "/rules race");
+				Bukkit.getScheduler().scheduleSyncDelayedTask(HorseRace.plugin, new RaceRunnable(race),0L);
+			}
+		}, 20*60*29, 20*60*30);
 	}
 	
 	public static Race getRace()

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import me.frodenkvist.powerball.PBHandler;
 import me.frodenkvist.utils.FireworkEffectPlayer;
 
 import org.bukkit.Bukkit;
@@ -14,19 +15,23 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class Race
 {
-	public static final int WIN_LAPS_AMOUNT = 2;
+	public static final int WIN_LAPS_AMOUNT = 4;
+	private int firstLapPeep;
 	private List<HRPlayer> participants = new ArrayList<HRPlayer>();
 	private CuboidArea raceArea;
+	private CuboidArea localAnnouncerArea;
 	private CuboidArea firstLine;
 	private CuboidArea secondLine;
 	private Location startLoc;
 	private Block signalBlock;
+	private Location spectatorSpawn;
 	private boolean started;
 	
 	public Race()
@@ -66,7 +71,13 @@ public class Race
 				continue;
 			if(!raceArea.containsLoc(p.getLocation()))
 				continue;
-			//p.teleport(startLoc);
+			if(!p.isInsideVehicle())
+			{
+				p.teleport(spectatorSpawn);
+				p.sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "HorseRace" + ChatColor.AQUA + "] " + ChatColor.YELLOW + "You Were Not On A Horse!");
+				continue;
+			}
+			p.teleport(startLoc);
 			HRPlayer hrp = RaceHandler.getPlayer(p);
 			participants.add(hrp);
 			hrp.setLastTime(new Date().getTime());
@@ -76,9 +87,35 @@ public class Race
 			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message.getBytes());
 			Bukkit.getMessenger().dispatchIncomingMessage(p, "Scoreboard", message2.getBytes());
 		}
+		firstLapPeep = 0;
 		signalBlock.setType(Material.REDSTONE_BLOCK);
-		started = true;
-		Race.globalAnnouncing(ChatColor.YELLOW + "The Race Has STARTED!!");
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(HorseRace.plugin, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Race.localAnnouncing("ON YOUR MARKS", localAnnouncerArea);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(HorseRace.plugin, new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						Race.localAnnouncing("GET SET!", localAnnouncerArea);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(HorseRace.plugin, new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								Race.localAnnouncing("GOOOOOO!!!", localAnnouncerArea);
+								signalBlock.setType(Material.AIR);
+								started = true;
+							}
+						}, 20*2);
+					}
+				}, 20*2);
+			}
+		}, 20*2);
 	}
 	
 	public void setWinner(HRPlayer winner)
@@ -94,7 +131,9 @@ public class Race
 			Bukkit.getMessenger().dispatchIncomingMessage(hrp.getPlayer(), "Scoreboard", message.getBytes());
 			participants.remove(hrp);
 		}
-		Race.globalAnnouncing(winner.getName() + " Has Won!");
+		Race.globalAnnouncing(ChatColor.LIGHT_PURPLE + winner.getName() + ChatColor.YELLOW + " has won the horse race, riding " + ChatColor.LIGHT_PURPLE + ((LivingEntity)winner.getPlayer().getVehicle()).getCustomName()
+				+ ChatColor.YELLOW + " and won a " + ChatColor.AQUA + "P" + ChatColor.YELLOW + "R" + ChatColor.RED + "I" + ChatColor.GREEN + "Z" + ChatColor.BLUE + "E" + ChatColor.YELLOW + " EGG, say: " + 
+				ChatColor.GREEN + "/rules race " + ChatColor.YELLOW + " for more information.");
 		winnerFireworks(winner.getPlayer());
 		winner.setLaps(0);
 		giveReward(winner);
@@ -102,6 +141,17 @@ public class Race
 		participants.remove(winner);
 		signalBlock.setType(Material.AIR);
 		started = false;
+		firstLapPeep = 0;
+	}
+	
+	public void checkFirst(HRPlayer hrp)
+	{
+		if(hrp.getLaps() > firstLapPeep)
+		{
+			Race.localAnnouncing(ChatColor.LIGHT_PURPLE + hrp.getName() + ChatColor.YELLOW + " has started lap lapnumber in the lead riding " + ChatColor.LIGHT_PURPLE + 
+					((LivingEntity)hrp.getPlayer().getVehicle()).getCustomName() + ChatColor.YELLOW + " " + hrp.getLaps() + "/" + Race.WIN_LAPS_AMOUNT, localAnnouncerArea);
+			firstLapPeep = hrp.getLaps();
+		}
 	}
 	
 	public boolean hasStarted()
@@ -134,6 +184,21 @@ public class Race
 		return signalBlock;
 	}
 	
+	public void setLocalAnnouncerArea(CuboidArea area)
+	{
+		localAnnouncerArea = area;
+	}
+	
+	public CuboidArea getLocalAnnouncerArea()
+	{
+		return localAnnouncerArea;
+	}
+	
+	public void setSpectatorLoc(Location loc)
+	{
+		spectatorSpawn = loc;
+	}
+	
 	private void giveReward(HRPlayer hrp)
 	{
 		Inventory inv = hrp.getPlayer().getInventory();
@@ -152,7 +217,7 @@ public class Race
 			}
 		}
 		if(check)
-			inv.addItem(new ItemStack(99));
+			inv.addItem(PBHandler.getPowerBall());
 	}
 	
 	public void winnerFireworks(Player player)
@@ -168,20 +233,20 @@ public class Race
 		}
 	}
 	
-	public static void localAnnouncing(String msg, CuboidArea raceArea)
+	public static void localAnnouncing(String msg, CuboidArea localAnnouncerArea)
 	{
 		for(Player p : Bukkit.getOnlinePlayers())
 		{
 			if(p == null)
 				continue;
-			if(!raceArea.containsLoc(p.getLocation()))
+			if(!localAnnouncerArea.containsLoc(p.getLocation()))
 				continue;
-			p.sendMessage(ChatColor.GREEN + "[Race]: " + ChatColor.RESET + msg);
+			p.sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "HorseRace" + ChatColor.AQUA + "] " + ChatColor.YELLOW + msg);
 		}
 	}
 	
 	public static void globalAnnouncing(String msg)
 	{
-		Bukkit.broadcastMessage(ChatColor.GREEN + "[Race]: " + ChatColor.RESET + msg);
+		Bukkit.broadcastMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "HorseRace" + ChatColor.AQUA + "] " + ChatColor.YELLOW + msg);
 	}
 }
